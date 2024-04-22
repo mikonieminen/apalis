@@ -452,7 +452,7 @@ impl<S, P> Worker<Ready<S, P>> {
                                 let fut = service.call(req);
                                 let worker_id = worker_id.clone();
                                 let state = worker.state.clone();
-                                worker.spawn(fut.map(move |res| {
+                                fut.map(move |res| {
                                     if let Err(e) = res {
                                         if let Some(ctx) = state.context.as_ref() {
                                             ctx.notify(Worker {
@@ -464,7 +464,7 @@ impl<S, P> Worker<Ready<S, P>> {
                                             });
                                         };
                                     }
-                                }));
+                                }).await
                             }
                             Ok(Err(e)) => {
                                 if let Some(ctx) = worker.state.context.as_ref() {
